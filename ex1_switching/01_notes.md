@@ -76,3 +76,84 @@ Anfangs kann es sein dass die ersten ping versuche Fehlschlagen da die MAC Adres
 > - Wo bzw. wie kann man sich die aktuelle Switch Konfiguration ansehen?
 > - Wie kann man die Passwörter in der Konfiguration verschlüsseln?
 > - Warum soll man Telnet nicht verwenden? Mit Wireshark das Telnet-PW mithören. Wie konfiguriert man einen sicheren Fernzugriff (SSH)? Wieder mit Wireshark „mithören“. 
+
+Konfiguration:
+
+```python
+enable
+    conf t
+        hostname S1 # S1 is hostname
+        banner modt "This is Florian's and Matteo's Switch! Don't touch it!"
+        enable password Hallo # "Hallo" ist pwd für "enable" config ebene
+        service password-encryption # verschlüsselter speicher (nicht im klar text running config speichern)
+        line vty 0 15   # Konfiguration für alle Lines
+            password Hallo  # Passwort für Fernzugriff
+            login   # Fernzugriff aktivieren (telnet)
+        interface vlan 1    # SVI damit switch eine IP hat (hier auf VLAN 1)
+            ip address 10.11.12.15  255.255.255.0   # Switch bekommt .15
+            no shut
+
+```
+
+Telnet funktioniert:
+![](telnet.png)
+
+Zusätzliche Fragen:
+
+1. Config anzeigen: 
+   ```python
+   enable
+       show running-config
+       # Wenn man in conf t oder einer andern eben ist dann "do" davor
+       conf t
+           do show running-config
+   ```
+2. Passwörter verschlüsseln:
+   ```python 
+    enable 
+        conf t 
+            service password-encryption
+   ```
+3. Telnet ist nicht verschlüsselt, jeder kann eingegebenen text (inkl. Passwort) mitlesen:
+   ![](pwd_sniff.png)
+   (Jeder Buchstabe ist in einem eigenen Frame und IP Packet)
+
+
+> ## 2.3 Zwei Switches mit VLANs:
+> Einen zweiten Switch ins Netzwerk bringen und konfigurieren. Drei VLANs einrichten
+> und zwischen den Switches einen Trunk konfigurieren.
+> Die zwei PCs jetzt auf die zwei Switches aufteilen und die Connectivity in gleichen
+> und unterschiedlichen VLANs überprüfen.
+> - Wie unterscheiden die Switches Packte aus verschiedenen VLANs am Trunk?
+> - Was ist ein native VLAN?
+> - Was ist die Rolle vom VLAN-1 bei Cisco-Devices?
+
+Config muss auf beiden Switches durchgeführt werden (ports sind auf beiden identisch). Die basis config von zuvor wird vorausgesetzt:
+
+```python
+enable
+    conf t
+        vlan 10 # enter config for vlan 10
+            name "ports1to10"
+            exit
+        vlan 20
+            name "ports11to20"
+            exit
+        # move port FE0/1 - FE0/10 to the new vlan 10
+        interface range fastEthernet 0/1 - 10
+            switchport mode access
+            switchport access vlan 10 # creates vlan 10 if it doesn't exit yet
+            no shut
+            exit
+        # do the same with FE0/11 - FE0/20
+        interface range fastEthernet 0/11 - 20
+            switchport mode access
+            switchport access vlan 20 # creates vlan 20 if it doesn't exit yet
+            no shut
+            exit
+        interface gigabitEthernet 0/1
+            switchport mode trunk
+            switchport trunk allowed vlan 10,20
+```
+
+continue next time ...
