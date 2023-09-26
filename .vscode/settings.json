@@ -105,7 +105,9 @@
 	"markdown-pdf.StatusbarMessageTimeout": 10000,
 
 	// A list of local paths to the stylesheets to use from the markdown-pdf. All '\' need to be written as '\\'.
-	"markdown-pdf.styles": [],
+	"markdown-pdf.styles": [
+		".vscode/markdown_styles.css"
+	],
 
 	// If markdown-pdf.stylesRelativePathFile option is set to true, the relative path set with markdown-pdf.styles is interpreted as relative from the file
 	"markdown-pdf.stylesRelativePathFile": false,
