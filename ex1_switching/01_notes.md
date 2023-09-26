@@ -39,7 +39,7 @@ Betreuer: Markus Signitzer <br>
 
 > ## 2.1 Plug and Play Switch
 > 
-> Zwei PCs (Achtung IP-Config - selbes Netzwerk!) sollen mit >einem Switch verbunden
+> Zwei PCs (Achtung IP-Config - selbes Netzwerk!) sollen mit einem Switch verbunden
 > werden. Connectivity mit pings überprüfen.
 > 
 > - Funktioniert die Verbindung? 
@@ -48,18 +48,18 @@ Betreuer: Markus Signitzer <br>
 
 ### Antworten
 
-PCs werden auf gleichen switch verbunden (andere PCs sind auch schon drauf, stören aber nicht):
+PCs werden auf gleichen Switch verbunden (andere PCs sind auch schon drauf, stören aber nicht):
 
 ![one switch](single_switch.png)
 
-Beide PCs werden auf dem gleichen subnetz konfiguriert:
+Beide PCs werden auf dem gleichen Subnetz konfiguriert:
 
 ```
 PC1: 10.11.12.13/24
 PC2: 10.11.12.14/24
 ```
 
-Pings Funktionieren:
+Pings funktionieren:
 
 PC1 -> PC2:
 
@@ -69,7 +69,7 @@ PC2 -> PC1:
 
 ![](ping_2_to_1.png)
 
-Anfangs kann es sein dass die ersten ping versuche Fehlschlagen da die MAC Adresse des anderen Hosts erst mittels ARP Protokoll ermittelt werden muss.
+Anfangs kann es sein dass die ersten Ping-Versuche fehlschlagen, da die MAC Adresse des anderen Hosts erst mittels ARP Protokoll ermittelt werden muss.
 
 ### Kommentare 
 Ausführung hat ohne Probleme stattgefunden. 
@@ -131,10 +131,10 @@ SSH funktioniert:
         conf t 
             service password-encryption
    ```
-3. Telnet ist nicht verschlüsselt, jeder kann eingegebenen text (inkl. Passwort) mitlesen:<br>
+3. Telnet ist nicht verschlüsselt, jeder kann eingegebenen Text (inkl. Passwort) mitlesen:<br>
    ![](pwd_sniff.png)<br>
    (Jeder Buchstabe ist in einem eigenen Frame und IP Packet)<br>
-   Bei SSH ist die gesamte Kommunikation verschlüsselt, man kann nichts Herauslesen:<br>
+   Bei SSH ist die gesamte Kommunikation verschlüsselt, man kann nichts herauslesen:<br>
    ![](ssh_sniff_attempt.png)
 
 ### Kommentare 
@@ -186,13 +186,13 @@ Die beiden PCs können nur dann kommunizieren, wenn sie sich im gleichen VLAN be
 
 ![same vlan](same_vlan.png)
 
-Sind die PCs in unterschiedlichen VLANs, egal ob am gleichen Switch oder kreuzweise, so können sie nicht Kommunizieren:
+Sind die PCs in unterschiedlichen VLANs, egal ob am gleichen Switch oder kreuzweise, so können sie nicht kommunizieren:
 
 ![different vlan](different_vlan.png)
 
 ### Antworten 
 
-1. Sie unterschiedlichen Frames werden im Header mit der VLAN Nummer versehen (Tagging)
+1. Die unterschiedlichen Frames werden im Header mit der VLAN Nummer versehen (Tagging)
 2. Das Native VLAN ist das VLAN, ohne Modifikation der Frames (ohne Tagging) über einen Trunk geleitet wird. Diese erspart Rechenaufwand beim Switch, ist aber veraltet, nicht sicher und sollte nicht verwendet werden.
 3. Ein Switch von Cisco hat zusätzlich zum VLAN 1 auch ein „interface Vlan1“. Hierbei handelt es sich um eine logische Schnittstelle, die über den Systembus mit dem VLAN 1 verbunden ist. Auf dieses Interface wird die IP-Adresse des Switches konfiguriert. 
 
