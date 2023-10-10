@@ -19,7 +19,7 @@ Betreuer: Markus Signitzer <br>
 > – gültig im Jahr 2016)
 
 ### Antworten 
-1. Gerät zum verbinden von Netzwerken; ;Layer 3 (Network Layer); Da er zuerst konfiguriert werden muss
+1. Gerät zum verbinden von Netzwerken; über den Routing-Table leitet er Layer 3 (IP) Packets an die Zieladressen weiter, Die Routen im Routing-Table können manuell (statisch) oder automatisch (dynamisch) mit einem Routing-Protokoll (RIP, OSPF, ...)hinzugefügt stellt werden; Layer 3 (Network Layer); Da der Routing-Table zuerst konfiguriert werden muss, er kann nicht automatisch ermittelt werden (ohne dass ein Routing-Protokoll aktiviert wird)
 2. Console, SSH, Telnet
 3. Das verbindungssuchende Geräte erhält automatisch eine Netzwerkadresse (IP-Adresse)<br>
 Schritte:
@@ -30,7 +30,7 @@ Schritte:
 
 4. Statische Routen: Die Routen zu bestimmten Netzwerken werden manuell eingegeben.<br>
 Dynamische Routen: Router tauschen Routen automatisch untereinander aus.<br>
-RIP: Später erklärt
+z.B. RIP: [Später erklärt](#22-dynamiches-routen)
 
 
 ## 2. Übungen
@@ -110,7 +110,7 @@ Gleiches macht die andere Gruppe. Danach kann man zwischen den Netzwerken pingen
 ![ping across networks](ping_to_n4.png)
 
 
-> ## 2.2 Dynamiches Routen:
+> ## 2.2 Dynamisches Routen:
 > Nun euer kleines 2-Router Netzwerk auf RIP umstellen und erneut auf Connectivity
 > überprüfen.
 > - Wie funktioniert RIP?
@@ -142,7 +142,7 @@ Nun funktioniert alles wie zuvor, mit dem Ping in Netzwerk N4.
 Antworten:
 
 1. Wie funktioniert RIP? <br>
-   Jeder Router teilt alle 30 Sekunden den anderen Routern seine Konfiguration und Ports mittels broadcast mit. Die beste Route, über die ein Paket geroutet wird, wird anhand des Hop-Count festgestellt, was nicht die beste Möglichkeit ist.
+   Jeder Router teilt alle 30 Sekunden den anderen Routern seine Konfiguration und Ports mittels broadcast mit. RIP ist ein altes Protokoll, die beste Route, über die ein Paket geroutet wird, wird anhand des Hop-Count festgestellt, was nicht die beste Möglichkeit ist.
 
 2. Um mehrere Gruppen zu verbinden wird ein weiteres VLAN am Mini-Switch festgelegt mit dem ein weiteres Netzwerk verbunden wird. Wenn alle Gruppen ihren Router interfaces die gemeinsam Festgelegten IP Adressen geben und RIP aktiviert haben, dann sollten die Routen dann automatisch gefunden werden.
 
@@ -150,5 +150,25 @@ Gemeinsam ausgemachtes Netzwerk:
 ![Alt text](networks.png)
 ![Alt text](ips.png)
 
+3. Das Netzwerk hat funktioniert (getestet bis auf R11 der bis Stundenende noch nicht fertig konfiguriert war). Die Übung wurde allerdings abgebrochen, daher konnten keine Pings Aufgezeichnet werden.
+
+> ## 2.+ Zusatzaufgaben Zweite Einheit
+> Es wird wieder ein Netzwerk mit vielen Routern und PCs aufgebaut, alle sollen sich gegenseitig Pingen können.
+> - Verwendet RIP
+> - Statische IPs sind OK
+> - Jeder einen Router, an jedem Router ein PC
+
+Die Konfiguration is abgesehen von dem nicht verwendeten DHCP Pools ident zur letzten Aufgaben, nur mit etwas anderen IPs.
+
+Das Netzwerk wird nach folgendem Plan aufgebaut:<br>
+![Alt text](networks2.png)
+
+Mit ```do show ip route``` kann man überprüfen ob alle Netzwerke gefunden wurden:<br>
+![routes](routes.png)
+
+Der PC kann auch auf andere Netzwerke zugreifen, mit dem Befehl ```traceroute <ip>```(Windows) oder ```tracepath <ip>``` (Linux): <br>
+![tracpath](tracepath.png)
+
+
 ### Kommentare 
-Ausführung hat ohne Probleme stattgefunden. 
+Ausführung hat großteils Probleme stattgefunden, lediglich bei der Gemeinsamen Übung sind nicht alle rechtzeitig fertig geworden. 
