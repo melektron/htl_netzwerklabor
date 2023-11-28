@@ -41,6 +41,7 @@ enable
             switchport trunk encapsulation dot1q
             switchport trunk allowed vlan 10,20,30,40,50
             exit
+        # repeat the last two blocks for every vlan
 ```
 
 Am Router:
@@ -57,5 +58,6 @@ enable
             default-router 10.10.1.254
             dns-server 1.1.1.1
             exit
+        # repeat the last two blocks for every vlan
 
 ```
