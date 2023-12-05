@@ -11,6 +11,7 @@ Operating System: RASPBERRY PI OS LITE (64-BIT)
 
 Rasperry Pi nummer: 6
 
+
 ## Config
 
 Hostname: flomatteo
@@ -45,49 +46,29 @@ Apache ist jetzt automatisch gestartet. Im ordner "/var/www/html" liegt das Root
 Dort wird unsere index.php Datei und unser flomatteo.php form receiver abgelegt werden. Auch die Bilddatei muss kopiert werden wenn sie angezeigt werden soll.
 
 
-## Development Netzwerk
+## Sniffing
 
-Für die Entwicklung wird ein Netzwerk verwendet das
-über Ethernet angeschlossen ist. 
+Um sniffing zu betreiben muss der Pi und ein Ziel PC mit einem unverschlüsselten WLAN verbunden werden.
+Dann wird am besten Kali Kali Linux gebootet.
 
-Es wird ein L2 Switch mit mehreren VLANs verwendet, der dann mit einem Router über einen Trunk verbunden wird welcher mittels NAT wlan zugriff gibt
+Dann kann die Netzwerkkarte in Monitoring mode versetzt werden, falls diese das unterstützt:
 
+```bash
 
-L2 switch: 
-
-```python
-enable
-    conf t
-        interface range fast 0/1-6
-            switchport mode access
-            switchport access vlan 10
-            no shut
-            exit
-        interface fast 0/48
-            switchport mode trunk
-            switchport trunk encapsulation dot1q
-            switchport trunk allowed vlan 10,20,30,40,50
-            exit
-        # repeat the last two blocks for every vlan
+sudo ifconfig <interface> down
+sudo airmon-ng check # sehen ob prozesse die netzwerk karte benutzen
+sudo airmon-ng check kill # sollte alle diese Prozesse killen (eventuell mehrmals machen)
+sudo iwconfig <interface> mode monitoring
+sudo iwconfig <interface> channel 1 # auf den WiFi channel anpassen
+sudo ifconfig <interface> up
 ```
 
-Am Router:
+Jetzt kann mit Wireshark das Interface überwacht werden.
+Filtert man auf die Server IP (IP des Pis) und öffnet dann die Seite bzw gibt das Passwort ein, so sieht man den Post request und den GET request.
+
+Man kann auch nur auf POST request filtern:
 
 ```python
-enable
-    conf t
-        interface gigabitEthernet 0/1.10
-            encapsulation dot1Q 10
-            ip address 10.10.1.254 255.255.255.0
-            exit
-        ip dhcp pool "10"
-            network 10.10.1.0 255.255.255.0
-            default-router 10.10.1.254
-            dns-server 1.1.1.1
-            exit
-        # repeat the last two blocks for every vlan
-
+ip.addr==<pi ip addr> && http.request.method==POST
 ```
 
-## Webserver 
-Xampp root folder: C:\xampp\htdocs 
