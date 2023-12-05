@@ -18,6 +18,33 @@ USername: flo
 password: matteo
 
 
+## Netzwerk setup
+
+Für development Ethernet an PC verbunden um SSH zugriff zu bekommen.
+Dann wird mit networkmanager mit einem WLAN verbunden für updates:
+
+```bash
+sudo nmtui # terminal gui for network manager
+# Gute info über NetworkManager und nmcli: http://www.intellamech.com/RaspberryPi-projects/rpi_nmcli.html
+```
+
+(WPA2 Enterprise konnte nicht zum laufen bringen)
+
+
+## Software
+
+```bash
+sudo apt update
+sudo apt install apache2 -y
+sudo apt install php -y 
+```
+
+## WebServer config
+
+Apache ist jetzt automatisch gestartet. Im ordner "/var/www/html" liegt das Root Verzeichnis des Webservers.
+Dort wird unsere index.php Datei und unser flomatteo.php form receiver abgelegt werden. Auch die Bilddatei muss kopiert werden wenn sie angezeigt werden soll.
+
+
 ## Development Netzwerk
 
 Für die Entwicklung wird ein Netzwerk verwendet das
@@ -61,3 +88,6 @@ enable
         # repeat the last two blocks for every vlan
 
 ```
+
+## Webserver 
+Xampp root folder: C:\xampp\htdocs 
