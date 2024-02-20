@@ -40,10 +40,26 @@ sudo apt install apache2 -y
 sudo apt install php -y 
 ```
 
+
 ## WebServer config
 
 Apache ist jetzt automatisch gestartet. Im ordner "/var/www/html" liegt das Root Verzeichnis des Webservers.
 Dort wird unsere index.php Datei und unser flomatteo.php form receiver abgelegt werden. Auch die Bilddatei muss kopiert werden wenn sie angezeigt werden soll.
+
+
+## HTTPS
+
+Um HTTPS zu konfigurieren, muss ein SSL Zertifikat erstellt und Apatche so konfiguriert werden, dass es verwendet wird.
+Solange nur ein lokales Netzwerk verwendet wird der Browser das Zertifikat zwar nicht ohne weiteres verifizieren können und daher eine Warnung ausgeben, aber die Verschlüsselung wird trotzdem funktionieren.
+
+Konfiguration:
+
+```bash
+sudo apt update
+sudo apt install openssl
+sudo mkdir -p /etc/ssl/mycerts
+
+```
 
 
 ## Sniffing

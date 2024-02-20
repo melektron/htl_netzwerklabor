@@ -1,0 +1,202 @@
+
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname matteol3
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 060B0E35584B061556
+!
+username matteol3 privilege 15 password 7 00091212105E040A5C
+!
+!
+no aaa new-model
+switch 1 provision ws-c3750g-24ts-1u
+system mtu routing 1500
+vtp mode transparent
+ip routing
+ip domain-name matteo.local
+!
+ip dhcp pool vlan16
+   network 192.168.16.0 255.255.255.0
+   default-router 192.168.16.254 
+   dns-server 192.168.16.254 
+!
+ip dhcp pool vlan17
+   network 192.168.17.0 255.255.255.0
+   default-router 192.168.17.254 
+   dns-server 192.168.17.254 
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1442922624
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1442922624
+ revocation-check none
+ rsakeypair TP-self-signed-1442922624
+!
+!
+crypto pki certificate chain TP-self-signed-1442922624
+ certificate self-signed 01
+  3082024D 308201B6 A0030201 02020101 300D0609 2A864886 F70D0101 04050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31343432 39323236 3234301E 170D3933 30333031 30303032 
+  33375A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 34343239 
+  32323632 3430819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  81009D40 34B015FA 8412F605 0FD720F1 8CA36ECF 20208E5D D81CFE8A 16733F6F 
+  F17C6E3B 938AEF1D 73C584BF A12E06F4 6CFDD11B 80D7539B 57E2970D 95E9154A 
+  C550F138 8D622E26 5A4048DF 297959C4 A4EEFDE3 8187814C 69280E4E B551FA96 
+  5D098A99 AAC7B3D7 37C0BC6E 6770283C 29F98343 FF41CC20 7A6C5E48 DDB198F6 
+  8B270203 010001A3 75307330 0F060355 1D130101 FF040530 030101FF 30200603 
+  551D1104 19301782 156D6174 74656F6C 332E6D61 7474656F 2E6C6F63 616C301F 
+  0603551D 23041830 16801424 638A8CD6 A93E38F3 679B7C0F DE83BC5B DB950F30 
+  1D060355 1D0E0416 04142463 8A8CD6A9 3E38F367 9B7C0FDE 83BC5BDB 950F300D 
+  06092A86 4886F70D 01010405 00038181 003B2429 0B6E0559 2BD6DD35 334AB9EB 
+  B4042483 E9C75E63 EC66E001 40FCC9A8 5296316D FF7AF347 CBC126F7 2575D3D0 
+  75EB340C 4ED40FCD B3AE7DE9 095E02EA 66C08A17 B7ACD075 E80B53DC 1F251955 
+  02C5BFD5 FF585F41 A2595C77 F1E3F847 089769AC 90D6AB3F 92F9E29B B4CA9401 
+  E8EA5783 6C0E2854 26FE1E8B 92433934 86
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+vlan 16-17 
+!
+ip ssh version 2
+ip scp server enable
+!
+!
+!
+interface GigabitEthernet1/0/1
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/2
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/3
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/4
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/5
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/6
+ switchport access vlan 16
+ switchport mode access
+!
+interface GigabitEthernet1/0/7
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/8
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/9
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/10
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/11
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/12
+ switchport access vlan 17
+ switchport mode access
+!
+interface GigabitEthernet1/0/13
+!
+interface GigabitEthernet1/0/14
+!
+interface GigabitEthernet1/0/15
+!
+interface GigabitEthernet1/0/16
+!
+interface GigabitEthernet1/0/17
+!
+interface GigabitEthernet1/0/18
+!
+interface GigabitEthernet1/0/19
+!
+interface GigabitEthernet1/0/20
+!
+interface GigabitEthernet1/0/21
+!
+interface GigabitEthernet1/0/22
+!
+interface GigabitEthernet1/0/23
+ switchport mode access
+!
+interface GigabitEthernet1/0/24
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 16,17
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/25
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 16,17
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/26
+!
+interface GigabitEthernet1/0/27
+!
+interface GigabitEthernet1/0/28
+!
+interface Vlan1
+ ip address 192.168.1.16 255.255.255.0
+!
+interface Vlan16
+ ip address 192.168.16.254 255.255.255.0
+!
+interface Vlan17
+ ip address 192.168.17.254 255.255.255.0
+!
+router rip
+ version 2
+ network 192.168.1.0
+ network 192.168.16.0
+ network 192.168.17.0
+ no auto-summary
+!
+ip classless
+ip http server
+ip http secure-server
+!
+!
+!
+!
+!
+line con 0
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!
+end
