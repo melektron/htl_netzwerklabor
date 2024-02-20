@@ -3,12 +3,19 @@
 This is a simple setup to create the following network and set up inter-vlan routing and trunking using an L2 and an L3 switch:
 
 
-## ssh access
+## remote access
+
+SSH:
 
 ```bash
 ssh -o KexAlgorithms=diffie-hellman-group1-sha1 -o Ciphers=aes256-cbc <user>@<host>
 ```
 
+SCP to copy running config:
+
+```bash
+scp -O -oKexAlgorithms=+diffie-hellman-group1-sha1 -oHostKeyAlgorithms=+ssh-rsa -oCiphers=+aes256-cbc <user>@<host>::running-config .
+```
 
 ## Config
 
