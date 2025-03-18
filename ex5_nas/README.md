@@ -14,7 +14,7 @@ Nextcloud SMB Minecraft Inventree
 
 
 
-# Nixos INstallation
+# Nixos INstallation (old, did not work)
 
 https://nixos.org/manual/nixos/stable/#sec-installation-manual
 
@@ -70,4 +70,6 @@ https://nixos.org/manual/nixos/stable/#sec-installation-manual
   - ```nixos-generate-config --root /mnt``` 
   - ```nixos-install```
     -> root password: ```password1234```
+
+# NixOS install new
 
