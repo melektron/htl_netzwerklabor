@@ -1,16 +1,26 @@
 
+# Vorgaben
+smb share
 
-Features:
+user flo
+user melektron
+user signitzer
+
+jeder ein privates verzeichnism
+1 shared folder
+raid
+
+
+#  Features:
+
 - File sharing (SMB)
-- 
-
-
-
-
-Nextcloud SMB Minecraft Inventree 
+- docker
+  - Nextcloud 
+  - Minecraft
+  - Inventree 
        Docker
        NixOS
-
+- syncthing
 
 
 
@@ -71,5 +81,224 @@ https://nixos.org/manual/nixos/stable/#sec-installation-manual
   - ```nixos-install```
     -> root password: ```password1234```
 
-# NixOS install new
+## Config
 
+loadkeys de
+
+No flakes weil einfacher fürs erste
+
+Installing vim, htop, mdadm
+
+enable ssh + permit root login
+
+user:
+```
+  # define a user. Don't forget to set a password with ‘passwd’.
+  users.users = {
+    person = {
+      isNormalUser = true;
+      description = "person";
+      extraGroups = [ 
+        "networkmanager"
+        "wheel"
+        "dialout"
+        "docker"
+      ];
+    };
+    markus = {
+      isNormalUser = true;
+      createHome = false;
+      description = "signitzer";
+    };
+    matteo = {
+      isNormalUser = true;
+      createHome = false;
+      description = "reiter";
+    };
+    florian = {
+      isNormalUser = true;
+      createHome = false;
+      description = "unterpertinger";
+    };
+  };
+  users.groups = {
+    "nasusers" = {
+      members = ["markus" "matteo" "florian"];
+    };
+  };
+```
+
+network manager on
+
+timezone europe/vienna
+
+console keymap de
+
+Passwort setzen: ```passwd person``` (Passwort: "person")
+
+permint root login danach wieder auskommentieren
+
+Docker:
+```
+# enable docker
+virtualisation.docker.enable = true;
+```
+
+Nochmal:
+```mdadm --create /dev/md0 --level=mirror --raid-devices=2 /dev/sda1 /dev/sdb1```
+
+Raid Support:
+```
+boot.swraid.enable = true;
+# we don't want to send logs per email
+boot.swraid.mdadmConf = ''
+  MAILADDR=nobody@nowhere
+'';
+```
+
+reboot
+
+jetzt ist bei lsblk sda die boot platte und sdb und sdc das raid, jetzt als ```md128``` bezeichnet
+
+Create Raid file system:
+```sudo mkfs.ext4 -L storage /dev/sdc1```
+
+Zum mounten des Raids
+
+```nix
+ fileSystems."/mnt/storage" = {
+   device = "/dev/disk/by-id/md-uuid-056d1d48:63ca12ff:d38679f1:81f4bd0e";
+   fsType = "ext4";
+   options = [ # If you don't have this options attribute, it'll default to "defaults" 
+     # boot options for fstab. Search up fstab mount options you can use
+     "users" # Allows any user to mount and unmount
+     "nofail" # Prevent system from failing if this drive doesn't mount
+     
+   ];
+ };
+```
+
+Samba:
+
+```nix
+  services.samba = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      global = {
+        "workgroup" = "WORKGROUP";
+        "server string" = "nixos";
+        "netbios name" = "nixos";
+        security = "user";
+        "hosts allow" = "0.0.0.0/0";
+        "guest account" = "nobody";
+        "map to guest" = "bad user";
+      };
+      "public" = {
+        "path" = "/mnt/storage/public";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "write list" = "markus,matteo,florian";
+        "valid users" = "markus,matteo,florian";
+      };
+      "markus" = { # sudo smbpasswd -a markus -> "markus"
+        "path" = "/mnt/storage/markus";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "write list" = "markus";
+        "valid users" = "markus";
+      };
+      "matteo" = { # sudo smbpasswd -a matteo -> "matteo"
+        "path" = "/mnt/storage/matteo";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "write list" = "matteo";
+        "valid users" = "matteo";
+      };
+      "florian" = { # sudo passwd -a florian -> "florian"
+        "path" = "/mnt/storage/florian";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "write list" = "florian";
+        "valid users" = "florian";
+      };
+    };
+  };
+  services.samba-wsdd = {
+    enable = true;
+    openFirewall = true;
+  };
+```
+
+Ordner erstellen:
+```bash
+cd /mnt/storage
+sudo mkdir public
+sudo chown person:nasusers public
+sudo chmod 777 public # 777 needed for syncthing
+sudo mkdir markus
+sudo chown person:nasusers markus
+sudo mkdir matteo
+sudo chown person:nasusers matteo
+sudo mkdir florian
+sudo chown person:nasusers florian
+```
+
+
+Extra avahi service to advertise share
+
+```
+  # https://gist.github.com/vy-let/a030c1079f09ecae4135aebf1e121ea6
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      domain = true;
+      hinfo = true;
+      userServices = true;
+      workstation = true;
+    };
+    extraServiceFiles = {
+      smb = ''
+        <?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+        <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+        <service-group>
+          <name replace-wildcards="yes">NixIsSuppa</name>
+          <service>
+            <type>_smb._tcp</type>
+            <port>445</port>
+          </service>
+        </service-group>
+      '';
+    };
+  };
+```
+
+
+Enable Syncthing:
+```
+  services.syncthing = {
+    enable = true;
+    openDefaultPorts = true;
+    guiAddress = "0.0.0.0:8384";  # allow access from local network bc this is a headless server
+    # Optional: GUI credentials (can be set in the browser instead if you don't want plaintext credentials in your configuration.nix file)
+    # or the password hash can be generated with "syncthing generate --config <path> --gui-password=<password>"
+    settings = {
+      gui = {
+        user = "person";
+        password = "person";
+      };
+      folders = {
+        "public" = {
+          path = "/mnt/storage/public";
+        };
+      };
+    };
+  };
+```
