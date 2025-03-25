@@ -196,6 +196,12 @@ Samba:
       };
       "public" = {
         "path" = "/mnt/storage/public";
+        
+        "force group" = "nasusers";
+        "create mask" = "0664";     # rw-rw-r--
+        # execute is needed for traversal of directories
+        "directory mask" = "0775";  # rwxrwxr-x
+
         "browseable" = "yes";
         "read only" = "no";
         "guest ok" = "no";
@@ -285,7 +291,10 @@ Enable Syncthing:
 ```
   services.syncthing = {
     enable = true;
+    group = "nasusers";
+    #dataDir = "/home/person";
     openDefaultPorts = true;
+
     guiAddress = "0.0.0.0:8384";  # allow access from local network bc this is a headless server
     # Optional: GUI credentials (can be set in the browser instead if you don't want plaintext credentials in your configuration.nix file)
     # or the password hash can be generated with "syncthing generate --config <path> --gui-password=<password>"
@@ -294,11 +303,34 @@ Enable Syncthing:
         user = "person";
         password = "person";
       };
+      devices = {
+        flo = {
+            id = "7FOD7EN-HVNYSSD-4CSAXOS-JMXHP43-DW57S6V-J3BKUP7-24QZBHM-M7WK5QW";
+        };
+        goarnix = {
+            id = "OV7VF4Z-JGZN6EN-JYFKQDJ-JTQKS27-CQK5OUU-FUL7LSS-QCGRU35-7KAHYA2";
+        };
+      };
       folders = {
         "public" = {
           path = "/mnt/storage/public";
+          devices = [ "flo" "goarnix" ];
+          copyOwnershipFromParent = true;   # make syncthing give new files the permissions of the parent folder (for this we need CAP_CHOWN)
+          ignorePerms = true;   # if we do not do this, syncthing always makes files rw-r--r-- and folders rwxr--r-- but we need rwxrwxr-x and rw-rw-r--
         };
       };
     };
+  };
+  # allow g+w for newly created folders (https://nitinpassa.com/running-syncthing-as-a-system-user-on-nixos/)
+  systemd.services.syncthing.serviceConfig.UMask = "0002";
+
+  # give CAP_CHOWN and cap_fowner (which some say is also neede)
+  # https://github.com/NixOS/nixpkgs/issues/338485
+  # https://search.nixos.org/options?channel=24.11&show=services.syncthing.settings.folders.%3Cname%3E.copyOwnershipFromParent&from=0&size=50&sort=relevance&type=packages&query=services.syncthing.
+  security.wrappers.syncthing = {
+    owner = "person";
+    group = "nasusers";
+    capabilities = "cap_chown,cap_fowner=pe";
+    source = "${pkgs.syncthing}/bin/syncthing";
   };
 ```
