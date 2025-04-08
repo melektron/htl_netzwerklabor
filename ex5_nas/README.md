@@ -14,12 +14,6 @@ raid
 #  Features:
 
 - File sharing (SMB)
-- docker
-  - Nextcloud 
-  - Minecraft
-  - Inventree 
-       Docker
-       NixOS
 - syncthing
 
 
@@ -257,7 +251,7 @@ sudo chown person:nasusers florian
 
 Extra avahi service to advertise share
 
-```
+```nix
   # https://gist.github.com/vy-let/a030c1079f09ecae4135aebf1e121ea6
   services.avahi = {
     enable = true;
@@ -288,7 +282,7 @@ Extra avahi service to advertise share
 
 
 Enable Syncthing:
-```
+```nix
   services.syncthing = {
     enable = true;
     group = "nasusers";
